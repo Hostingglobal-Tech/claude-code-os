@@ -4,6 +4,8 @@
 
 **AI 코더 두 명 (Anthropic Claude Code + OpenAI Codex CLI) 이 동시에 탑재된** 부팅 가능한 LiveUSB ISO. Linux Mint 21.3 XFCE 기반.
 
+DHCP 방식으로 IP가 자동으로 잡힙니다. 유선랜과 무선랜을 지원합니다. 무선일경우 AP(공유기) 를 선택하는 메뉴를 통해서 접속할수 있습니다.
+
 USB 한 개 꽂고 부팅하면 — `cco` 사용자 자동 로그인 → XFCE 데스크톱 (Wi-Fi GUI, 한글 입력, Firefox 내장) → **xfce4-terminal 한 창에 두 탭 자동** (좌탭: Claude Code, 우탭: OpenAI Codex). OAuth 한 번이면 끝. Wi-Fi 비번 / 작업물 / 설치한 패키지 전부 Ventoy persistence 로 영구 저장.
 
 > "v2.0" 부터 Linux Mint 21.3 XFCE 기반. 이전 Alpine v1.0.x 시리즈는 [`archive/alpine-v1/`](archive/alpine-v1/) 참조.
