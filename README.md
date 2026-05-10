@@ -86,11 +86,30 @@ F:\cco-persistence.dat        (3.5 GB, ext4 label=casper-rw)
 F:\ventoy\ventoy.json
 ```
 
-`cco-persistence.dat` 만들기 (Linux):
+`cco-persistence.dat` 준비 — 두 가지 방법 중 선택:
+
+**방법 A (권장): Release 에서 미리 만든 압축본 다운로드**
+- [Releases v2.0.5](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.5) 에서 `cco-persistence.dat.xz` (543 KB) 다운로드
+- 압축 풀기:
+  - Linux/WSL/macOS: `xz -d cco-persistence.dat.xz` → 3.5 GB `cco-persistence.dat`
+  - Windows: 7-Zip 으로 `cco-persistence.dat.xz` 우클릭 → "여기에 압축 풀기"
+
+**방법 B: 직접 생성 (Linux/WSL/macOS — 더 큰 사이즈 원할 때)**
 ```bash
-dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500
-mkfs.ext4 -F -L casper-rw cco-persistence.dat
+# 기본 3.5 GB
+sudo bash make-persistence.sh
+
+# 또는 8 GB / 16 GB
+sudo bash make-persistence.sh 8000
+sudo bash make-persistence.sh 16000
 ```
+또는 한 줄:
+```bash
+sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500
+sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
+```
+
+> dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 안에 작업 데이터 (Wi-Fi 비번, OAuth, 파일) 채워질수록 사용량 ↑, 한도 (3.5 GB) 초과 시 더 큰 dat 새로 만들어 교체.
 
 `ventoy.json`:
 ```json
