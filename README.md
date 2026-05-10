@@ -96,42 +96,40 @@ F:\ventoy\ventoy.json
   - Linux/WSL/macOS: `xz -d cco-persistence.dat.xz` → 3.5 GB `cco-persistence.dat`
   - Windows: 7-Zip 으로 `cco-persistence.dat.xz` 우클릭 → "여기에 압축 풀기"
 
-**방법 B: 직접 생성 — 더 큰 사이즈 원할 때**
-
-> ⚠️ **USB 파일시스템 한계 주의**:
-> - **FAT32 USB** = single-file **최대 4 GB**. → dat 사이즈 `3500 ~ 3900 MB` 까지만.
-> - **exFAT / NTFS USB** = 사실상 무제한. → 8 GB / 16 GB / 32 GB dat 모두 OK.
-> - Ventoy 1.0.96+ 기본은 **exFAT** (8 GB+ 가능). 옛 버전 또는 명시 FAT32 로 포맷한 경우만 4 GB 한도.
-> - USB 포맷 확인: Windows = "내 컴퓨터" 우클릭 속성, Linux = `lsblk -f`.
-> - FAT32 → exFAT 로 재포맷하려면 Ventoy 의 `Ventoy2Disk` Configuration > Partition Style 에서 변경 후 재설치 (USB 데이터 다 지워짐, 백업 필수).
+**방법 B: 직접 생성 (3.5 GB)**
 
 Linux / WSL / macOS:
 ```bash
-# 기본 3.5 GB (FAT32 호환)
 sudo bash make-persistence.sh
-
-# exFAT/NTFS USB 면 더 크게
-sudo bash make-persistence.sh 8000     # 8 GB
-sudo bash make-persistence.sh 16000    # 16 GB
 ```
 
 Windows (PowerShell, WSL 필요):
 ```powershell
-# 기본 3.5 GB (FAT32 호환)
 powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1
+```
+> Windows 에 WSL 없으면: 관리자 PowerShell 에서 `wsl --install` → 재부팅 → 다시 실행.
+> WSL 설치 부담스러우면 **방법 A (다운로드 + 7-Zip)** 가 더 빠름.
 
-# exFAT/NTFS USB 면 더 크게
+> dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 한도 초과 시 더 큰 dat 새로 만들어 교체.
+
+<details>
+<summary><b>4 GB 이상 dat 만들기 (USB 가 exFAT/NTFS 일 때만)</b></summary>
+
+> **주의 — FAT32 USB 는 single-file 4 GB 한도라 8 GB dat 복사 안 됨.**
+> Ventoy 1.0.96+ 기본은 exFAT 이라 OK. 옛 버전이거나 명시 FAT32 로 포맷한 USB 면 먼저 exFAT 재포맷 (Ventoy `Ventoy2Disk` → Configuration → Partition Style = exFAT, **USB 데이터 백업 필수**).
+
+```bash
+# Linux/WSL/macOS — 8 GB / 16 GB
+sudo bash make-persistence.sh 8000
+sudo bash make-persistence.sh 16000
+```
+
+```powershell
+# Windows — 8 GB
 powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1 -Size 8000
 ```
-> Windows 에 WSL 없으면: 관리자 PowerShell 에서 `wsl --install` 후 재부팅 한 번.
-> 또는 **WSL 설치 부담스러우면 방법 A (`cco-persistence.dat.xz` 다운 + 7-Zip 풀기)** 권장.
 
-또는 Linux 한 줄:
-```bash
-sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
-```
-
-> dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 안에 작업 데이터 (Wi-Fi 비번, OAuth, 파일) 채워질수록 사용량 ↑, 한도 초과 시 더 큰 dat 새로 만들어 교체.
+</details>
 
 `ventoy.json`:
 ```json
@@ -171,69 +169,185 @@ sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -
 
 ## QnA — 자주 묻는 질문
 
-**Q1. `cco-persistence.dat` 파일 어디서 받나요?**
-→ 세 가지 방법:
-- (a) **Release v2.0.5** 에서 `cco-persistence.dat.xz` (543 KB) 다운 → 풀면 3.5 GB dat. **권장 (가장 빠름, OS 무관)**
-  - Windows: 7-Zip 우클릭 → "여기에 압축 풀기"
-  - Linux/macOS: `xz -d cco-persistence.dat.xz`
-- (b) `bash make-persistence.sh [SIZE_MB]` — Linux/WSL/macOS 자동 생성 (사이즈 선택)
-- (c) `powershell -File Make-Persistence.ps1 -Size 3500` — Windows 자동 생성 (WSL 필요)
+목차: [다운로드/설치](#-다운로드--설치) · [persistence](#-persistence) · [인증](#-인증) · [한글/Wi-Fi](#-한글--wi-fi) · [호환성](#-호환성--부팅) · [사용](#-사용) · [빌드/업데이트](#-빌드--업데이트)
 
-**Q2. dat 용량은 자동으로 늘어나나요?**
-→ **아닙니다.** dat 는 **고정 사이즈 ext4 컨테이너**. 안에 작업 데이터 채워질수록 사용량 ↑ (한도 3.5 GB). 한도 초과 시 더 큰 dat (예: 8 GB) 새로 만들어 교체.
+---
 
-**Q2-1. dat 8 GB 만들려는데 USB 에 복사 안 돼요.**
-→ USB 가 **FAT32** 라서. FAT32 = single-file 4 GB 한도. 옵션:
-- (a) dat 사이즈 줄이기 — `3500 ~ 3900 MB` 까지 FAT32 OK
-- (b) USB 를 **exFAT** 로 재포맷 (Ventoy `Ventoy2Disk` Configuration > Partition Style = exFAT 선택 후 재설치, **USB 데이터 다 지워짐**)
-- (c) Ventoy 1.0.96+ 최신 버전 사용 (기본 exFAT)
+### · 다운로드 / 설치
 
-**Q3. 다른 PC 에 같은 USB 꽂으면 설정 그대로 살아있나요?**
-→ **YES.** Wi-Fi 비번 / Claude OAuth / Codex API 키 / 작업 파일 / 설치한 패키지 전부 USB 의 persistence dat 에 저장. 회의실 PC, 카페 노트북, 호텔 데스크탑 어디서든 같은 USB 꽂고 부팅 → 내 환경 그대로.
+#### Q1. `cco-persistence.dat` 파일 어디서 받나요?
 
-**Q4. 호스트 PC 디스크는 안전한가요?**
-→ **YES.** LiveUSB 는 USB 안에서만 데이터 작업. 호스트 디스크는 안 건드립니다. USB 빼고 나오면 흔적 0.
+세 가지 방법 중 가장 편한 거:
 
-**Q5. ISO 두 part 파일 어떻게 합치나요?**
-→ Linux/WSL/macOS: `cat aicode-os-v2.0.5.iso.part1 aicode-os-v2.0.5.iso.part2 > aicode-os-v2.0.5.iso` / Windows: `copy /b aicode-os-v2.0.5.iso.part1+aicode-os-v2.0.5.iso.part2 aicode-os-v2.0.5.iso`
+| 방법 | 명령 | 시간 |
+|---|---|---|
+| **A. 다운로드 (권장)** | [Release](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.5) 에서 `cco-persistence.dat.xz` (543 KB) → 7-Zip / `xz -d` | 1분 |
+| B. Linux/WSL/macOS 생성 | `sudo bash make-persistence.sh` | 1분 |
+| C. Windows 생성 | `powershell -File Make-Persistence.ps1` | 1분 (WSL 필요) |
 
-**Q6. 한글 입력 안 되면?**
-→ `Shift+Space` 또는 `Hangul` 키로 한/영 토글. 입력기 아이콘이 트레이에 안 보이면 터미널에서 `ibus restart`.
+#### Q5. ISO 두 part 파일 어떻게 합치나요?
 
-**Q6-1. 맥 OS 사용자인데 Caps Lock 으로 한/영 전환 안 되나요?**
-→ 현재 v2.0.5 는 `Shift+Space` / `Hangul` 만 지원. **다음 릴리즈 (v2.0.6 예정)** 에서 macOS 사용자 친화 위해 **Caps Lock = 한/영 토글** 추가 박을 예정. 임시 우회: 부팅 후 터미널에서 `dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock']" && ibus restart` (persistence 로 한 번만).
+```bash
+# Linux / WSL / macOS
+cat aicode-os-v2.0.5.iso.part1 aicode-os-v2.0.5.iso.part2 > aicode-os-v2.0.5.iso
 
-**Q7. Wi-Fi 비번 어떻게 입력?**
-→ 화면 우측 하단 트레이의 nm-applet 아이콘 클릭 → AP 선택 → 비번 입력. 한 번 입력하면 persistence 로 영구.
+# Windows (cmd)
+copy /b aicode-os-v2.0.5.iso.part1+aicode-os-v2.0.5.iso.part2 aicode-os-v2.0.5.iso
+```
 
-**Q8. Codex 첫 사용 시 어떻게 인증?**
-→ Codex 탭에서 두 가지 중 선택:
-- (a) `export OPENAI_API_KEY="sk-..."` (영구 저장은 `~/.bashrc` 박음)
-- (b) codex 가 자동으로 ChatGPT 로그인 안내 — Firefox 에서 OAuth
+---
 
-**Q9. Claude 인증은?**
-→ Claude 탭이 자동으로 OAuth URL 출력 — Firefox 새 탭에 붙여넣기 → claude.ai 로그인 → 끝. Persistence 로 한 번만.
+### · persistence
 
-**Q10. 어떤 PC 에서 부팅되나요?**
-→ x86_64 (Intel/AMD) PC + 노트북 대부분. 동작 확인: ASUS X515, Samsung NT900X3A (13년 묵은 노트북). 일반 사양: Intel HD/UHD/AMD GPU + Intel iwlwifi.
+#### Q2. dat 용량은 자동으로 늘어나나요?
 
-**Q11. 두 탭 (Claude / Codex) 어떻게 전환?**
-→ xfce4-terminal 상단 탭 클릭 또는 `Ctrl+Page Up/Down` / `Ctrl+Tab`.
+**아닙니다.** dat 는 **고정 사이즈 ext4 컨테이너** (3.5 GB).
 
-**Q12. 한 AI 가 막히면 다른 AI 에 시켜도 되나요?**
-→ **YES**, 그게 두 탭 박은 이유. Claude 가 막히면 Codex 탭에 같은 작업 시키기.
+- 안에 작업 데이터 채워질수록 사용량 ↑
+- 3.5 GB 한도 초과 시 → 더 큰 dat (예: 8 GB) 새로 만들어 교체
 
-**Q13. ISO 직접 빌드는 어떻게?**
-→ 위 "직접 빌드" 섹션 참조. Linux/WSL 에서 `sudo bash build-mint.sh` (~35분). Mint 21.3 XFCE ISO 만 사전 다운로드 필요.
+#### Q2-1. 8 GB dat 만들려는데 USB 에 복사 안 돼요.
 
-**Q14. 새 버전 (v2.0.6 등) 나오면 어떻게 update?**
-→ Release 에서 새 ISO part 다운 → 합치기 → USB 의 옛 ISO 삭제 + 새 ISO 복사 → `ventoy.json` 의 `VTOY_DEFAULT_IMAGE` 만 새 파일명으로 변경. **persistence dat 은 그대로** — 설정 유지.
+USB 가 **FAT32** 라서. FAT32 = **single-file 4 GB 한도**.
 
-**Q15. 부팅 안 되면?**
-→ BIOS 의 USB 부팅 우선순위 확인. SecureBoot ON 이면 OFF (Linux Mint 는 SecureBoot 호환 buf 일부 펌웨어와 충돌). UEFI vs Legacy 둘 다 시도.
+| 해결 | 비고 |
+|---|---|
+| (a) dat 사이즈 줄이기 → `3500 ~ 3900 MB` | FAT32 호환, 가장 단순 |
+| (b) USB 를 **exFAT** 로 재포맷 | Ventoy `Ventoy2Disk` → Configuration → Partition Style = exFAT → 재설치. **USB 데이터 다 지워짐** |
+| (c) Ventoy 1.0.96+ 최신 버전 | 기본 exFAT |
 
-**Q16. 어떻게 종료?**
-→ 사용자가 만든 데이터는 모두 persistence dat 에 자동 저장. USB 빼기 전 `sync` 한 번 (또는 lightdm 메뉴 → 종료) 권장. 그냥 USB 뽑아도 대부분 OK (ext4 journaling).
+#### Q3. 다른 PC 에 같은 USB 꽂으면 설정 그대로 살아있나요?
+
+**YES.** USB 의 persistence dat 에 저장:
+- Wi-Fi 비번
+- Claude OAuth
+- Codex API 키
+- 작업 파일
+- 설치한 패키지
+
+회의실 PC, 카페 노트북, 호텔 데스크탑 어디서든 같은 USB 꽂고 부팅 → **내 환경 그대로**.
+
+---
+
+### · 인증
+
+#### Q9. Claude 인증은 어떻게?
+
+Claude 탭이 자동으로 OAuth URL 출력 → Firefox 새 탭 붙여넣기 → claude.ai 로그인. **persistence 로 한 번만.**
+
+#### Q8. Codex 첫 사용 인증은?
+
+Codex 탭에서 두 가지 중 선택:
+
+```bash
+# 방법 1: API 키 (영구 저장은 ~/.bashrc 박음)
+export OPENAI_API_KEY="sk-..."
+
+# 방법 2: codex 가 자동으로 ChatGPT 로그인 안내 → Firefox OAuth
+codex
+```
+
+---
+
+### · 한글 / Wi-Fi
+
+#### Q6. 한글 입력 안 되면?
+
+`Shift+Space` 또는 `Hangul` 키로 한/영 토글.
+
+입력기 아이콘이 트레이에 안 보이면:
+```bash
+ibus restart
+```
+
+#### Q6-1. macOS 사용자인데 Caps Lock 으로 한/영 전환 안 되나요?
+
+현재 v2.0.5 는 `Shift+Space` / `Hangul` 만 지원.
+
+**다음 릴리즈 (v2.0.6 예정)** 에서 **Caps Lock = 한/영 토글** 추가 박을 예정.
+
+임시 우회 (v2.0.5 사용 중) — 한 번만 실행하면 persistence 로 영구:
+```bash
+dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock']"
+ibus restart
+```
+
+#### Q7. Wi-Fi 비번 어떻게 입력?
+
+화면 **우측 하단 트레이의 nm-applet 아이콘** 클릭 → AP 선택 → 비번 입력. 한 번 입력하면 persistence 로 영구.
+
+---
+
+### · 호환성 / 부팅
+
+#### Q4. 호스트 PC 디스크는 안전한가요?
+
+**YES.** LiveUSB 는 USB 안에서만 데이터 작업. 호스트 디스크는 안 건드립니다. USB 빼고 나오면 흔적 0.
+
+#### Q10. 어떤 PC 에서 부팅되나요?
+
+**x86_64 (Intel/AMD) PC + 노트북 대부분.**
+
+| 동작 확인 | 사양 |
+|---|---|
+| ASUS X515 | 신형 |
+| Samsung NT900X3A | 13년 묵은 노트북 |
+| 일반 사양 | Intel HD/UHD/AMD GPU + Intel iwlwifi |
+
+#### Q15. 부팅 안 되면?
+
+| 확인 | 방법 |
+|---|---|
+| USB 부팅 우선순위 | BIOS 진입 후 Boot Order 에서 USB 가 위로 |
+| SecureBoot | **OFF** (Linux Mint 가 일부 펌웨어와 충돌) |
+| UEFI vs Legacy | 둘 다 시도 |
+
+---
+
+### · 사용
+
+#### Q11. 두 탭 (Claude / Codex) 어떻게 전환?
+
+xfce4-terminal 상단 탭 클릭 또는 키보드 단축키:
+- `Ctrl+Page Up` / `Ctrl+Page Down`
+- `Ctrl+Tab`
+
+#### Q12. 한 AI 가 막히면 다른 AI 에 시켜도 되나요?
+
+**YES**, 그게 두 탭 박은 이유.
+
+Claude 가 막히면 Codex 탭에 같은 작업 시키기. 두 AI 가 잘하는 게 다름.
+
+#### Q16. 어떻게 종료?
+
+사용자 데이터는 모두 persistence dat 에 자동 저장. 안전 종료:
+
+```bash
+sync   # 또는 lightdm 메뉴 → 종료
+```
+
+그냥 USB 뽑아도 대부분 OK (ext4 journaling).
+
+---
+
+### · 빌드 / 업데이트
+
+#### Q13. ISO 직접 빌드는 어떻게?
+
+위 [직접 빌드](#1-1-선택-직접-빌드) 섹션 참조.
+
+```bash
+# Linux/WSL — Mint 21.3 XFCE ISO 사전 다운로드 후
+sudo bash build-mint.sh   # ~35분
+```
+
+#### Q14. 새 버전 (v2.0.6 등) 나오면 어떻게 update?
+
+1. Release 에서 새 ISO part 다운 → 합치기
+2. USB 의 옛 ISO 삭제 + 새 ISO 복사
+3. `ventoy.json` 의 `VTOY_DEFAULT_IMAGE` 만 새 파일명으로 변경
+
+> **persistence dat 은 그대로 둠** — 설정 / Wi-Fi / OAuth 다 유지.
 
 ---
 
