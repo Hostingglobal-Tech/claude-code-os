@@ -187,6 +187,9 @@ sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -
 **Q6. 한글 입력 안 되면?**
 → `Shift+Space` 또는 `Hangul` 키로 한/영 토글. 입력기 아이콘이 트레이에 안 보이면 터미널에서 `ibus restart`.
 
+**Q6-1. 맥 OS 사용자인데 Caps Lock 으로 한/영 전환 안 되나요?**
+→ 현재 v2.0.5 는 `Shift+Space` / `Hangul` 만 지원. **다음 릴리즈 (v2.0.6 예정)** 에서 macOS 사용자 친화 위해 **Caps Lock = 한/영 토글** 추가 박을 예정. 임시 우회: 부팅 후 터미널에서 `dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock']" && ibus restart` (persistence 로 한 번만).
+
 **Q7. Wi-Fi 비번 어떻게 입력?**
 → 화면 우측 하단 트레이의 nm-applet 아이콘 클릭 → AP 선택 → 비번 입력. 한 번 입력하면 persistence 로 영구.
 

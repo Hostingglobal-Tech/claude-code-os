@@ -4,6 +4,22 @@
 
 ---
 
+## v2.0.6 (예정) — macOS 사용자 친화 + 추가 개선
+
+### 박을 예정 (커뮤니티 피드백 반영)
+- **Caps Lock = 한/영 토글** 추가 — macOS 사용자 친화 (macOS 기본 한/영 키가 Caps Lock 이라는 의견 반영)
+- ibus hotkey trigger 에 `Caps_Lock` 추가
+- 영문 키보드 사용자 대상 dual-toggle (Shift+Space / Caps Lock 둘 다 동작)
+
+→ 임시 우회 (v2.0.5 사용 중): 터미널에서
+```bash
+dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock']"
+ibus restart
+```
+persistence 덕분에 한 번만.
+
+---
+
 ## v2.0.5 (2026-05-09) — 한 창 두 탭 + persistence 자동 (커뮤니티 의견 반영)
 
 ### 추가 (커뮤니티 피드백 반영)
