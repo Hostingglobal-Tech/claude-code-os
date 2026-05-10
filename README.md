@@ -96,7 +96,9 @@ F:\ventoy\ventoy.json
   - Linux/WSL/macOS: `xz -d cco-persistence.dat.xz` → 3.5 GB `cco-persistence.dat`
   - Windows: 7-Zip 으로 `cco-persistence.dat.xz` 우클릭 → "여기에 압축 풀기"
 
-**방법 B: 직접 생성 (Linux/WSL/macOS — 더 큰 사이즈 원할 때)**
+**방법 B: 직접 생성 — 더 큰 사이즈 원할 때**
+
+Linux / WSL / macOS:
 ```bash
 # 기본 3.5 GB
 sudo bash make-persistence.sh
@@ -105,10 +107,21 @@ sudo bash make-persistence.sh
 sudo bash make-persistence.sh 8000
 sudo bash make-persistence.sh 16000
 ```
-또는 한 줄:
+
+Windows (PowerShell, WSL 필요):
+```powershell
+# 기본 3.5 GB
+powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1
+
+# 또는 8 GB
+powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1 -Size 8000
+```
+> Windows 에 WSL 없으면: 관리자 PowerShell 에서 `wsl --install` 후 재부팅 한 번.
+> 또는 **WSL 설치 부담스러우면 방법 A (`cco-persistence.dat.xz` 다운 + 7-Zip 풀기)** 권장.
+
+또는 Linux 한 줄:
 ```bash
-sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500
-sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
+sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
 ```
 
 > dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 안에 작업 데이터 (Wi-Fi 비번, OAuth, 파일) 채워질수록 사용량 ↑, 한도 (3.5 GB) 초과 시 더 큰 dat 새로 만들어 교체.
@@ -152,9 +165,12 @@ sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
 ## QnA — 자주 묻는 질문
 
 **Q1. `cco-persistence.dat` 파일 어디서 받나요?**
-→ 두 가지 방법:
-- (a) **Release v2.0.5** 에서 `cco-persistence.dat.xz` (543 KB) 다운 → `xz -d` 풀면 3.5 GB dat. 권장.
-- (b) `make-persistence.sh` 으로 직접 생성 (Linux/WSL/macOS). 사이즈 선택 가능 (8 GB / 16 GB).
+→ 세 가지 방법:
+- (a) **Release v2.0.5** 에서 `cco-persistence.dat.xz` (543 KB) 다운 → 풀면 3.5 GB dat. **권장 (가장 빠름, OS 무관)**
+  - Windows: 7-Zip 우클릭 → "여기에 압축 풀기"
+  - Linux/macOS: `xz -d cco-persistence.dat.xz`
+- (b) `bash make-persistence.sh [SIZE_MB]` — Linux/WSL/macOS 자동 생성 (사이즈 선택)
+- (c) `powershell -File Make-Persistence.ps1 -Size 3500` — Windows 자동 생성 (WSL 필요)
 
 **Q2. dat 용량은 자동으로 늘어나나요?**
 → **아닙니다.** dat 는 **고정 사이즈 ext4 컨테이너**. 안에 작업 데이터 채워질수록 사용량 ↑ (한도 3.5 GB). 한도 초과 시 더 큰 dat (예: 8 GB) 새로 만들어 교체.
