@@ -98,22 +98,29 @@ F:\ventoy\ventoy.json
 
 **방법 B: 직접 생성 — 더 큰 사이즈 원할 때**
 
+> ⚠️ **USB 파일시스템 한계 주의**:
+> - **FAT32 USB** = single-file **최대 4 GB**. → dat 사이즈 `3500 ~ 3900 MB` 까지만.
+> - **exFAT / NTFS USB** = 사실상 무제한. → 8 GB / 16 GB / 32 GB dat 모두 OK.
+> - Ventoy 1.0.96+ 기본은 **exFAT** (8 GB+ 가능). 옛 버전 또는 명시 FAT32 로 포맷한 경우만 4 GB 한도.
+> - USB 포맷 확인: Windows = "내 컴퓨터" 우클릭 속성, Linux = `lsblk -f`.
+> - FAT32 → exFAT 로 재포맷하려면 Ventoy 의 `Ventoy2Disk` Configuration > Partition Style 에서 변경 후 재설치 (USB 데이터 다 지워짐, 백업 필수).
+
 Linux / WSL / macOS:
 ```bash
-# 기본 3.5 GB
+# 기본 3.5 GB (FAT32 호환)
 sudo bash make-persistence.sh
 
-# 또는 8 GB / 16 GB
-sudo bash make-persistence.sh 8000
-sudo bash make-persistence.sh 16000
+# exFAT/NTFS USB 면 더 크게
+sudo bash make-persistence.sh 8000     # 8 GB
+sudo bash make-persistence.sh 16000    # 16 GB
 ```
 
 Windows (PowerShell, WSL 필요):
 ```powershell
-# 기본 3.5 GB
+# 기본 3.5 GB (FAT32 호환)
 powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1
 
-# 또는 8 GB
+# exFAT/NTFS USB 면 더 크게
 powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1 -Size 8000
 ```
 > Windows 에 WSL 없으면: 관리자 PowerShell 에서 `wsl --install` 후 재부팅 한 번.
@@ -124,7 +131,7 @@ powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1 -Size 8000
 sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -F -L casper-rw cco-persistence.dat
 ```
 
-> dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 안에 작업 데이터 (Wi-Fi 비번, OAuth, 파일) 채워질수록 사용량 ↑, 한도 (3.5 GB) 초과 시 더 큰 dat 새로 만들어 교체.
+> dat 컨테이너는 **고정 사이즈** (자동 안 늘어남). 안에 작업 데이터 (Wi-Fi 비번, OAuth, 파일) 채워질수록 사용량 ↑, 한도 초과 시 더 큰 dat 새로 만들어 교체.
 
 `ventoy.json`:
 ```json
@@ -174,6 +181,12 @@ sudo dd if=/dev/zero of=cco-persistence.dat bs=1M count=3500 && sudo mkfs.ext4 -
 
 **Q2. dat 용량은 자동으로 늘어나나요?**
 → **아닙니다.** dat 는 **고정 사이즈 ext4 컨테이너**. 안에 작업 데이터 채워질수록 사용량 ↑ (한도 3.5 GB). 한도 초과 시 더 큰 dat (예: 8 GB) 새로 만들어 교체.
+
+**Q2-1. dat 8 GB 만들려는데 USB 에 복사 안 돼요.**
+→ USB 가 **FAT32** 라서. FAT32 = single-file 4 GB 한도. 옵션:
+- (a) dat 사이즈 줄이기 — `3500 ~ 3900 MB` 까지 FAT32 OK
+- (b) USB 를 **exFAT** 로 재포맷 (Ventoy `Ventoy2Disk` Configuration > Partition Style = exFAT 선택 후 재설치, **USB 데이터 다 지워짐**)
+- (c) Ventoy 1.0.96+ 최신 버전 사용 (기본 exFAT)
 
 **Q3. 다른 PC 에 같은 USB 꽂으면 설정 그대로 살아있나요?**
 → **YES.** Wi-Fi 비번 / Claude OAuth / Codex API 키 / 작업 파일 / 설치한 패키지 전부 USB 의 persistence dat 에 저장. 회의실 PC, 카페 노트북, 호텔 데스크탑 어디서든 같은 USB 꽂고 부팅 → 내 환경 그대로.
