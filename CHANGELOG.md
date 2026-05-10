@@ -7,9 +7,9 @@
 ## v2.0.6 (예정) — macOS 사용자 친화 + 추가 개선
 
 ### 박을 예정 (커뮤니티 피드백 반영)
-- **Caps Lock = 한/영 토글** 추가 — macOS 사용자 친화 (macOS 기본 한/영 키가 Caps Lock 이라는 의견 반영)
-- ibus hotkey trigger 에 `Caps_Lock` 추가
-- 영문 키보드 사용자 대상 dual-toggle (Shift+Space / Caps Lock 둘 다 동작)
+- **Caps Lock = 한/영 토글** 기본 박힘 — **@akra.dev 님 의견 반영** (*"맥북은 Caps Lock 이 기본 한/영 변환"*)
+- ibus hotkey trigger 에 `Caps_Lock` 추가 (`Shift+Space` + `Hangul` + `Caps_Lock` 셋 다)
+- 맥북 / 영문 키보드 사용자 친화
 
 → 임시 우회 (v2.0.5 사용 중): 터미널에서
 ```bash
