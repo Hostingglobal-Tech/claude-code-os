@@ -4,7 +4,12 @@
 
 ---
 
-## v2.0.5 (2026-05-09) — 한 창 두 탭 (Claude + Codex) + 화면 사이즈 무관
+## v2.0.5 (2026-05-09) — 한 창 두 탭 + persistence 자동 (커뮤니티 의견 반영)
+
+### 추가 (커뮤니티 피드백 반영)
+- **`cco-persistence.dat.xz`** Release upload (543 KB 압축본, 풀면 3.5 GB ext4) — **@imusiro 님의 "dat 어디서 받나" 의견** 반영
+- **`make-persistence.sh`** 자동 생성 스크립트 — Linux/WSL/macOS 에서 한 줄 실행으로 dat 만들기 (사이즈 선택 가능)
+- README 에 **QnA 16개** 섹션 추가 (dat / 인증 / Wi-Fi / 부팅 / 호환 / 종료 등)
 
 ### 수정 (v2.0.4 의 회귀 fix)
 - **두 별도 xfce4-terminal 창 → 한 창 두 탭**
