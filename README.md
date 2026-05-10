@@ -2,7 +2,7 @@
 
 ![AICODE-OS](branding/cco-cover.png)
 
-**USB 하나만 꽂으면 어느 컴퓨터든 30초 만에 AI (Claude + ChatGPT 의 Codex) 두 명이 같이 뜨는 운영체제.**
+**USB 하나만 꽂으면 어느 컴퓨터든 1분 안에 AI (Claude + ChatGPT 의 Codex) 두 명이 같이 뜨는 운영체제.**
 
 설치 필요 없습니다. 부팅하는 순간:
 - 와이파이 자동으로 잡힘
@@ -32,7 +32,7 @@ AI 와 한 번 대화하려고:
 
 AI 가 결국 우리가 쓰는 도구인데, 왜 그 앞에 복잡한 단계를 끼워둘까. 그래서 **OS 자체를 AI 로** 만들었습니다.
 
-USB 꽂고 → 30초 → 로그인 한 번 → AI.
+USB 꽂고 → 약 1분 → 로그인 한 번 → AI.
 
 ### USB 안에 뭐가 들어있나
 
@@ -121,7 +121,7 @@ USB 의 root 폴더 (예: `F:` 드라이브 안 최상위) 에 그대로 복사:
 
 #### 6단계 · 부팅
 
-USB 꽂고 → 컴퓨터 켤 때 **F12 / ESC / F2** 누름 → 부팅 메뉴에서 USB 선택 → 30초 후 AI 두 탭 자동 시작.
+USB 꽂고 → 컴퓨터 켤 때 **F12 / ESC / F2** 누름 → 부팅 메뉴에서 USB 선택 → 약 1분 후 AI 두 탭 자동 시작.
 
 > 사용 후 와이파이 비번 / 로그인 정보 / 작업 파일은 자동으로 USB 에 저장됩니다. 다음에 켜면 그대로.
 
@@ -333,7 +333,7 @@ sudo bash build-mint.sh   # ~35분
 
 Talking to AI takes too many steps — install OS, drivers, browser, Node, npm, login. AI is the interface; why bolt an OS install ritual in front of it? So we made the OS itself AI.
 
-Boot → 30 sec → auth → AI.
+Boot → ~1 min → auth → AI.
 
 ### What's inside (v2.0.5)
 
