@@ -161,9 +161,18 @@ powershell -ExecutionPolicy Bypass -File Make-Persistence.ps1 -Size 8000
 - 일반 x86_64 PC (Intel HD/UHD/AMD GPU + Intel iwlwifi)
 
 ### 보안 안내
-"샌드박스가 아닙니다." `claude --dangerously-skip-permissions` 로 root 권한 + 풀 네트워크 권한입니다. 중요한 머신에는 띄우지 마세요. LiveUSB 는 USB 안에서만 데이터 보존되며 호스트 디스크는 건드리지 않습니다.
 
-비밀번호 / Wi-Fi / OAuth 토큰 / OpenAI API 키는 "persistence dat 안에만" 저장됩니다. USB 분실 = 데이터 노출. 분실 시 원격에서 `cco-persistence.dat` 만 삭제하는 기능이 없습니다. 절대로 분실하지 않도록 관리를 잘해주시기 바랍니다. 오픈소스로 제작 방법을 공개하였으니 커스텀하게 개조가 가능합니다.
+#### 호스트 PC 디스크 = 안전
+LiveUSB 는 **USB 안에서만 작업**합니다. 호스트 PC 의 디스크 (Windows / 기존 Linux 등) 는 건드리지 않습니다. USB 빼고 나오면 흔적 0.
+
+#### AI 가 root 권한 = 신중
+샌드박스가 아닙니다. `claude --dangerously-skip-permissions` + `codex` 가 **root 권한 + 풀 네트워크** 로 실행됩니다. AI 가 시키는 명령은 그대로 실행되니, 모르는 명령이나 외부 코드를 무분별하게 실행하지 마세요. (위험은 호스트 디스크가 아니라 USB 안의 작업물 / 네트워크로 나가는 데이터에 있음.)
+
+#### USB 분실 = 토큰 노출 주의
+비밀번호 / Wi-Fi / Claude OAuth / OpenAI API 키는 USB 의 `cco-persistence.dat` 안에만 저장됩니다.
+- USB 분실 시 원격 삭제 기능 없음 → 잘 관리하세요.
+- 분실 후 토큰 무효화: claude.ai / OpenAI 콘솔에서 직접 revoke.
+- 오픈소스 (Apache-2.0) 라 직접 빌드 + 커스텀 개조 가능.
 
 ---
 
@@ -392,7 +401,12 @@ Flash USB with [Ventoy](https://www.ventoy.net/), drop the ISO + a 3.5 GB ext4 f
 ASUS X515 · Samsung NT900X3A · generic x86_64 PCs (Intel HD/UHD/AMD GPU, Intel iwlwifi)
 
 ### Security
-**Not a sandbox.** `claude --dangerously-skip-permissions` runs as root with full network. Don't run on machines with sensitive data on disk. LiveUSB doesn't touch host disks; all state (Wi-Fi, OAuth, OpenAI API key) lives in `cco-persistence.dat` on the USB. Lose USB = lose secrets. Delete `cco-persistence.dat` to reset.
+
+**Host disk: safe.** LiveUSB only writes inside the USB. Host PC's disk (Windows / existing Linux) is never touched. Pull the USB and there's zero trace.
+
+**AI runs as root: be cautious.** Not a sandbox. `claude --dangerously-skip-permissions` + `codex` execute with **root + full network**. Whatever the AI runs, runs. Don't blindly execute unknown commands or external code. (The risk is to your USB workspace and outbound network — not the host disk.)
+
+**Lose the USB = lose secrets.** Wi-Fi passwords, Claude OAuth, OpenAI API key all live in `cco-persistence.dat` on the USB. No remote wipe. Manage it carefully. If lost, revoke tokens via claude.ai / OpenAI console. Apache-2.0 — fork and customize.
 
 ---
 
