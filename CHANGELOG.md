@@ -4,12 +4,18 @@
 
 ---
 
-## v2.0.6 (예정) — macOS 사용자 친화 + 추가 개선
+## v2.0.6 (예정) — 최신 CLI 빌드 + 고해상도 wallpaper + macOS 사용자 친화
 
-### 박을 예정 (커뮤니티 피드백 반영)
-- **Caps Lock = 한/영 토글** 기본 박힘 — **@akra.dev 님 의견 반영** (*"맥북은 Caps Lock 이 기본 한/영 변환"*)
-- ibus hotkey trigger 에 `Caps_Lock` 추가 (`Shift+Space` + `Hangul` + `Caps_Lock` 셋 다)
-- 맥북 / 영문 키보드 사용자 친화
+### 추가 및 개선
+- **빌드 시점 최신 CLI 설치** — `@anthropic-ai/claude-code@latest`, `@openai/codex@latest`를 설치하도록 명시
+- **기존 ISO 버전 오해 방지** — 이미 배포된 ISO의 CLI는 ISO 생성 당시 버전이며, 최신 CLI가 필요하면 ISO를 다시 빌드해야 함을 README에 명시
+- **Caps Lock = 한/영 토글** 기본 설정 추가 — **@akra.dev 님 의견 반영** (*"맥북은 Caps Lock 이 기본 한/영 변환"*)
+- ibus hotkey trigger 에 `Caps_Lock` 추가 (`Shift+Space` + `Hangul` + `Caps_Lock` + `Super+Space`)
+- **고해상도/외부 모니터 wallpaper 복구** — 실제 연결된 모니터 이름을 감지해 XFCE wallpaper를 로그인 후 다시 적용
+- **자동시작 동작 정정** — README 설명과 맞게 Claude Code와 OpenAI Codex를 한 xfce4-terminal 창의 두 탭으로 실행
+- **CLI 종료 후 복구성 개선** — Claude/Codex가 종료되어도 탭이 바로 닫히지 않고 shell로 돌아오도록 처리
+- **Ventoy 설치 스크립트 정정** — 옛 Alpine ISO 파일명을 사용하던 문제를 수정하고, 현재 Release의 `aicode-os-*.iso.part1/part2`와 `cco-persistence.dat.xz` 구조를 처리하도록 변경
+- **셸 스크립트 검수** — Linux/macOS 실행을 방해하던 CRLF 줄끝 문제를 정리하고 `bash -n`, `shellcheck` 통과 확인
 
 → 임시 우회 (v2.0.5 사용 중): 터미널에서
 ```bash
@@ -30,13 +36,13 @@ persistence 덕분에 한 번만.
 ### 수정 (v2.0.4 의 회귀 fix)
 - **두 별도 xfce4-terminal 창 → 한 창 두 탭**
   - v2.0.4 의 `--geometry=+1000+450` 좌표가 1366×768 (Samsung NT900X3A 등) 화면 밖이라 Codex 창이 안 보였음
-  - v2.0.5 = `xfce4-terminal --maximize --tab` (한 창에 좌탭 Claude / 우탭 Codex) — 모든 화면 사이즈에서 OK
+  - v2.0.5 = `xfce4-terminal --maximize --tab` (한 창에 좌탭 Claude / 우탭 Codex) — 다양한 화면 크기에서 정상 표시
 - **graceful 종료** — claude / codex 종료 시 `exec bash` (창 살아있고 재시작 가능)
 - **Codex 첫 실행 안내** — `OPENAI_API_KEY` / `~/.codex/auth.json` 부재 시 setup 가이드 자동 출력
 - **첫 부팅 시 stale 정리** — `aicode-startup-dual` 이 옛 v2.0.0~v2.0.4 의 stale `~/.config/autostart/*.desktop` 자동 rm
 
 ### 빌드 인프라 fix
-- **chroot bind mount 잔존 = mksquashfs deadlock 원인** 발견 — 매 빌드 끝에 `umount -f -l` + verify 박음
+- **chroot bind mount 잔존 = mksquashfs deadlock 원인** 발견 — 매 빌드 끝에 `umount -f -l` + verify 추가
 - **direct-patch 빌드 방식** — Mint apt mirror 404 회피 위해 v2.0.4 sqfs base + file 패치만 + 새 mksquashfs (chroot apt 단계 0)
 
 ### 추가 데스크톱 아이콘
@@ -128,8 +134,8 @@ persistence 덕분에 한 번만.
 - Firefox / nm-applet / xfce4-terminal 모두 내장
 - Samsung 900X 같은 옛 노트북도 native 부팅
 
-### 박힘
-- Linux Mint 21.3 XFCE LiveCD (`linuxmint-21.3-xfce-64bit.iso`) 가져와 chroot 안 추가 패키지 박음
+### 포함 항목
+- Linux Mint 21.3 XFCE LiveCD (`linuxmint-21.3-xfce-64bit.iso`) 기반으로 chroot 안에 필요한 패키지 추가
 - `claude-code` (Node v20 LTS) + `ibus-hangul` + Naver D2Coding (GitHub release zip)
 - `cco` user (NOPASSWD sudo, autologin / nopasswdlogin / sudo / audio / video / plugdev / netdev 그룹)
 - `cco-startup` 스크립트 = ASCII banner + claude 자동 시작

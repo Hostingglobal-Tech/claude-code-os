@@ -6,7 +6,7 @@ set -e
 WORK_DIR="${WORK_DIR:-$(pwd)}"
 cd "$WORK_DIR"
 
-VERSION="${VERSION:-2.0.5}"
+VERSION="${VERSION:-2.0.6}"
 ISO_OUT="${ISO_OUT:-aicode-os-v${VERSION}.iso}"
 ISO_IN="${ISO_IN:-linuxmint-21.3-xfce-64bit.iso}"
 WALLPAPER_PNG="${WALLPAPER_PNG:-${WORK_DIR}/branding/cco-wallpaper.png}"
@@ -75,8 +75,12 @@ dpkg-reconfigure -f noninteractive tzdata 2>/dev/null || true
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt install -y nodejs
 
-# claude-code + OpenAI Codex CLI (둘 다 npm)
-npm install -g @anthropic-ai/claude-code @openai/codex
+# claude-code + OpenAI Codex CLI (둘 다 npm, 기본은 빌드 시점 최신)
+CLAUDE_CODE_NPM_VERSION="${CLAUDE_CODE_NPM_VERSION:-latest}"
+CODEX_NPM_VERSION="${CODEX_NPM_VERSION:-latest}"
+npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_NPM_VERSION}" "@openai/codex@${CODEX_NPM_VERSION}"
+claude --version 2>/dev/null || true
+codex --version 2>/dev/null || true
 
 # D2Coding 폰트 (Naver GitHub release — Ubuntu repo 미포함)
 mkdir -p /usr/share/fonts/truetype/d2coding
@@ -118,12 +122,21 @@ cat <<'BANNER'
      ██║  ██║██║╚██████╗╚██████╔╝██████╔╝███████╗     ╚██████╔╝███████║
      ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝      ╚═════╝ ╚══════╝
 
-           AICODE-OS  v2.0.4  ·  Anthropic Claude Code 창
+           AICODE-OS  v2.0.6  ·  Anthropic Claude Code
 
 BANNER
 printf '\033[0m'
 printf '\033[38;5;245m  Mint 21.3 XFCE · cco user (sudo NOPASSWD) · 한글: Shift+Space\033[0m\n\n'
-exec claude --dangerously-skip-permissions
+if command -v claude >/dev/null 2>&1; then
+  claude --dangerously-skip-permissions
+  rc=$?
+else
+  echo "ERROR: claude command not found"
+  rc=127
+fi
+echo
+echo "Claude Code exited with status ${rc}. This shell stays open for recovery."
+exec bash
 EOSTART
 chmod 755 /usr/local/bin/aicode-startup-claude
 
@@ -141,33 +154,46 @@ cat <<'BANNER'
      ██║  ██║██║╚██████╗╚██████╔╝██████╔╝███████╗     ╚██████╔╝███████║
      ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝      ╚═════╝ ╚══════╝
 
-           AICODE-OS  v2.0.4  ·  OpenAI Codex CLI 창
+           AICODE-OS  v2.0.6  ·  OpenAI Codex CLI
 
 BANNER
 printf '\033[0m'
 printf '\033[38;5;245m  npm @openai/codex · OPENAI_API_KEY 또는 ChatGPT 로그인 필요\033[0m\n\n'
-exec codex
+if command -v codex >/dev/null 2>&1; then
+  codex
+  rc=$?
+else
+  echo "ERROR: codex command not found"
+  rc=127
+fi
+echo
+echo "OpenAI Codex exited with status ${rc}. This shell stays open for recovery."
+exec bash
 EOCODEX
 chmod 755 /usr/local/bin/aicode-startup-codex
 
-# autostart — Claude + Codex 두 창 동시 시작
+# autostart — Claude + Codex 한 창 두 탭 동시 시작
 mkdir -p /home/cco/.config/autostart
-cat > /home/cco/.config/autostart/aicode-claude.desktop <<'EODESK1'
-[Desktop Entry]
-Type=Application
-Name=AICODE-OS Claude
-Exec=xfce4-terminal --geometry=120x36+50+80 --title=AICODE-OS\ —\ Claude\ Code --hold -e /usr/local/bin/aicode-startup-claude
-X-GNOME-Autostart-enabled=true
-EODESK1
+rm -f /home/cco/.config/autostart/aicode-claude.desktop \
+      /home/cco/.config/autostart/aicode-codex.desktop \
+      /home/cco/.config/autostart/cco-startup.desktop \
+      /home/cco/.config/autostart/aicode-startup-dual.desktop
 
-cat > /home/cco/.config/autostart/aicode-codex.desktop <<'EODESK2'
+cat > /usr/local/bin/aicode-startup-dual <<'EODUAL'
+#!/bin/bash
+exec xfce4-terminal --maximize --disable-server \
+  --tab --title="Claude Code" --command="/usr/local/bin/aicode-startup-claude" \
+  --tab --title="OpenAI Codex" --command="/usr/local/bin/aicode-startup-codex"
+EODUAL
+chmod 755 /usr/local/bin/aicode-startup-dual
+
+cat > /home/cco/.config/autostart/aicode-os.desktop <<'EODESK'
 [Desktop Entry]
 Type=Application
-Name=AICODE-OS Codex
-Exec=xfce4-terminal --geometry=100x30+1000+450 --title=AICODE-OS\ —\ OpenAI\ Codex --hold -e /usr/local/bin/aicode-startup-codex
-X-GNOME-Autostart-Delay=2
+Name=AICODE-OS
+Exec=/usr/local/bin/aicode-startup-dual
 X-GNOME-Autostart-enabled=true
-EODESK2
+EODESK
 
 # Korean input — ibus + 한글 locale
 cat > /home/cco/.profile <<'EOPROF'
@@ -194,8 +220,8 @@ cat > /usr/local/bin/cco-ibus-setup <<'EOIBSCR'
 sleep 3
 # Register English + Korean (hangul)
 dconf write /desktop/ibus/general/preload-engines "['xkb:us::eng', 'hangul']" 2>/dev/null
-# Toggle keys: Shift+Space, Hangul (Right-Alt on most KR keyboards), <Super>space
-dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', '<Super>space']" 2>/dev/null
+# Toggle keys: Shift+Space, Hangul (Right-Alt on most KR keyboards), Caps Lock, <Super>space
+dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock', '<Super>space']" 2>/dev/null
 dconf write /desktop/ibus/general/use-system-keyboard-layout true 2>/dev/null
 dconf write /desktop/ibus/general/embed-preedit-text true 2>/dev/null
 # Restart ibus to apply
@@ -257,10 +283,92 @@ cat > /home/cco/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'EO
           <property name="last-image" type="string" value="/usr/share/backgrounds/cco/wallpaper.png"/>
         </property>
       </property>
+      <property name="monitorHDMI-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/cco/wallpaper.png"/>
+        </property>
+      </property>
+      <property name="monitorDP-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/cco/wallpaper.png"/>
+        </property>
+      </property>
+      <property name="monitordefault" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/cco/wallpaper.png"/>
+        </property>
+      </property>
+      <property name="monitorVirtual1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/cco/wallpaper.png"/>
+        </property>
+      </property>
     </property>
   </property>
 </channel>
 EOXFCE
+
+# XFCE는 실제 모니터 이름(eDP-1/HDMI-1/DP-1/Virtual1 등)을 backdrop key에 넣는다.
+# 고해상도/외부 모니터 장비에서 이름이 바뀌면 빌드 시 XML만으로는 wallpaper가 빠질 수 있어
+# 로그인 후 실제 연결된 monitor key 전체에 wallpaper를 다시 적용한다.
+cat > /usr/local/bin/cco-apply-wallpaper <<'EOWALL'
+#!/bin/bash
+set -u
+
+WALLPAPER="/usr/share/backgrounds/cco/wallpaper.png"
+[ -f "$WALLPAPER" ] || exit 0
+
+for _ in $(seq 1 20); do
+  if command -v xfconf-query >/dev/null 2>&1 && pgrep -x xfdesktop >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+set_prop() {
+  local path="$1" type="$2" value="$3"
+  xfconf-query -c xfce4-desktop -p "$path" -n -t "$type" -s "$value" >/dev/null 2>&1 || true
+  xfconf-query -c xfce4-desktop -p "$path" -s "$value" >/dev/null 2>&1 || true
+}
+
+monitors="monitor0 monitordefault monitorDefault monitorVirtual1"
+if command -v xrandr >/dev/null 2>&1; then
+  connected="$(xrandr --query 2>/dev/null | awk '/ connected/{print "monitor"$1}' | tr '\n' ' ')"
+  monitors="$monitors $connected"
+fi
+existing="$(xfconf-query -c xfce4-desktop -l 2>/dev/null | sed -n 's|^/backdrop/screen0/\([^/]*\)/workspace[0-9]/last-image$|\1|p' | sort -u | tr '\n' ' ')"
+monitors="$(printf '%s\n' $monitors $existing | awk 'NF && !seen[$0]++')"
+
+for monitor in $monitors; do
+  for workspace in 0 1 2 3; do
+    base="/backdrop/screen0/${monitor}/workspace${workspace}"
+    set_prop "${base}/color-style" int 0
+    set_prop "${base}/image-style" int 5
+    set_prop "${base}/last-image" string "$WALLPAPER"
+    set_prop "${base}/image-path" string "$WALLPAPER"
+  done
+done
+
+xfdesktop --reload >/dev/null 2>&1 || true
+EOWALL
+chmod 755 /usr/local/bin/cco-apply-wallpaper
+
+cat > /home/cco/.config/autostart/cco-apply-wallpaper.desktop <<'EOWALLAUTO'
+[Desktop Entry]
+Type=Application
+Name=CCO high-resolution wallpaper apply
+Exec=/usr/local/bin/cco-apply-wallpaper
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=8
+EOWALLAUTO
 
 # Mint 기본 배경 심볼릭 — Mint 가 wallpaper 못 찾으면 fallback
 mkdir -p /usr/share/backgrounds/linuxmint
@@ -287,8 +395,22 @@ theme-name=Mint-Y-Dark-Aqua
 icon-theme-name=Mint-Y
 EOGTK
 
-# Desktop 아이콘 두 개 (Claude / Codex)
+# Desktop 아이콘 (통합 실행 + Claude / Codex 단독 실행)
 mkdir -p /home/cco/Desktop
+cat > /home/cco/Desktop/AICODE-OS.desktop <<'EOAIOS'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=AICODE-OS
+Comment=Launch Claude Code and OpenAI Codex in one terminal window
+Exec=/usr/local/bin/aicode-startup-dual
+Icon=utilities-terminal
+Terminal=false
+Categories=Development;
+StartupNotify=true
+EOAIOS
+chmod +x /home/cco/Desktop/AICODE-OS.desktop
+
 cat > /home/cco/Desktop/AICODE-Claude.desktop <<'EOAICLA'
 [Desktop Entry]
 Version=1.0

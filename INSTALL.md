@@ -111,7 +111,7 @@ mkfs.ext4 -F -L casper-rw cco-persistence.dat
 
 - **부팅 시 "Welcome to Alpine" 떨어짐** — ISO 파일 손상. 다시 다운로드.
 - **PTY 에러 / can't open tty1** — v1.0.33 이상 사용. 옛 버전 폐기.
-- **Wi-Fi 안 잡힘** — RTL8821CE chip 의 firmware 포함됨 (v1.0.17+). 그래도 안 되면 `dmesg | grep -i firmware` 확인.
+- **Wi-Fi가 연결되지 않음** — RTL8821CE chip 의 firmware 포함됨 (v1.0.17+). 그래도 안 되면 `dmesg | grep -i firmware` 확인.
 - **persistence 안 활성** — `mountpoint /persistence` 결과 확인. ventoy.json 의 image 이름이 ISO 와 정확히 일치 해야.
 
 ---
