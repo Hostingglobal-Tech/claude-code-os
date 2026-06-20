@@ -6,15 +6,15 @@
 
 설치 과정 없이 USB로 부팅해 사용할 수 있습니다. 부팅 후에는:
 - 와이파이 연결
-- 한글 입력 됩니다 (`Shift+Space` 또는 `한/영` 키)
+- 한글 입력 됩니다 (`Shift+Space`, `한/영`, v2.0.6부터 `Caps Lock`)
 - 화면 가득 검은 창 하나에 **탭 두 개** — 왼쪽 Claude, 오른쪽 ChatGPT Codex
 - 와이파이 비번, 로그인 정보, 작업한 파일 모두 **USB 안에 자동 저장** → 다음에 켜면 그대로
 
 다른 컴퓨터에서도 같은 USB로 부팅하면 익숙한 작업 환경을 그대로 사용할 수 있습니다. LiveUSB 방식이므로 호스트 PC의 디스크에는 기본적으로 기록하지 않습니다.
 
 > 🙏 **커뮤니티 의견 반영**
-> - **v2.0.5 (현재)** — 스레드 사용자 **@imusiro** 님의 *"저장 파일은 어디서 받나요?"* 의견 반영. 이제 직접 만들지 않고 Release 파일을 다운로드해 사용할 수 있습니다.
-> - **v2.0.6 (다음 릴리즈)** — **@akra.dev** 님의 *"맥북은 Caps Lock 이 기본 한/영 변환인데 맥 환경은 안 좋아하시나봄"* 의견을 반영해 **Caps Lock 키 = 한/영 토글**을 기본 설정에 포함합니다. (v2.0.5에서도 한 줄 명령으로 활성화 가능 → [QnA Q · 맥북 Caps Lock](#4-한글--와이파이) 참조)
+> - **v2.0.5** — 스레드 사용자 **@imusiro** 님의 *"저장 파일은 어디서 받나요?"* 의견 반영. 이제 직접 만들지 않고 Release 파일을 다운로드해 사용할 수 있습니다.
+> - **v2.0.6 (최신)** — **@akra.dev** 님의 *"맥북은 Caps Lock 이 기본 한/영 변환인데 맥 환경은 안 좋아하시나봄"* 의견을 반영해 **Caps Lock 키 = 한/영 토글**을 기본 설정에 포함합니다. (v2.0.5에서도 한 줄 명령으로 활성화 가능 → [QnA Q · 맥북 Caps Lock](#4-한글--와이파이) 참조)
 > - **v2.0.6 추가 수정** — 고해상도/외부 모니터 장비에서 XFCE 모니터명이 달라져도 AICODE-OS wallpaper가 자동 적용되도록 로그인 후 wallpaper 복구 스크립트를 추가했습니다.
 > - **CLI 버전 안내** — 이미 배포된 ISO 안의 Claude Code/Codex는 ISO를 만들 당시의 버전입니다. `build-mint.sh`로 새 ISO를 빌드하면 빌드 시점의 최신 npm 패키지를 설치합니다.
 
@@ -42,7 +42,7 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 - **AI 두 명** — Claude (Anthropic) + Codex (OpenAI)
 - **인터넷 브라우저** — Firefox (로그인용)
-- **한글 입력** — `Shift+Space` 또는 `한/영` 키로 한/영 토글
+- **한글 입력** — `Shift+Space`, `한/영`, v2.0.6부터 `Caps Lock` 키로 한/영 토글
 - **와이파이** — 우측 하단 메뉴 클릭, AP 선택, 비번 입력 (한 번이면 영구)
 - **자동 저장** — 와이파이 비번 / 로그인 / 작업 파일 모두 USB 에 영구 저장
 - **언어/시간** — 한국어 (ko_KR), 한국 시간 (Asia/Seoul)
@@ -55,7 +55,35 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 > 다른 PC 에서도 같은 USB 꽂으면 모든 설정 그대로. 호스트 PC 디스크는 안 건드립니다.
 
-### 시작하기 (5분)
+### 가장 쉬운 시작: Windows에서 더블클릭
+
+Windows 사용자는 명령어를 몰라도 됩니다.
+
+1. 이 저장소를 ZIP으로 다운로드합니다.
+2. 압축을 풉니다.
+3. `AICODE-OS-USB-만들기.cmd`를 더블클릭합니다.
+4. 화면에 나오는 USB 목록에서 USB 메모리만 선택합니다.
+
+내부적으로는 `install-cco-on-ventoy.ps1`이 실행되어 Ventoy 설치, ISO 다운로드, ISO 병합, persistence 적용, `ventoy.json` 생성까지 한 번에 처리합니다.
+
+가장 중요한 안전장치:
+- **USB로 표시되는 디스크만** Ventoy 설치 대상으로 허용합니다.
+- **Windows 부팅 디스크, 시스템 디스크, C:가 포함된 디스크는 무조건 차단**합니다.
+- 포맷 직전에는 `ERASE USB 디스크번호`를 직접 입력해야 합니다.
+- 이미 Ventoy가 설치된 USB에 파일만 넣을 때는 `-SkipVentoyInstall -Drive F:`처럼 실행할 수 있습니다.
+
+명령어를 직접 입력하고 싶은 경우에는 관리자 PowerShell에서:
+```powershell
+cd C:\DEVEL\claude-code-os
+powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1
+```
+
+이미 Ventoy가 설치된 USB가 `F:`라면 포맷 없이 파일만 배치:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -SkipVentoyInstall
+```
+
+### 수동 시작하기 (5분)
 
 #### 1단계 · USB 8 GB 이상 준비
 
@@ -63,12 +91,12 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 #### 2단계 · 두 파일 다운로드
 
-[**Releases v2.0.5**](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.5) 에서:
+[**Releases v2.0.6**](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6) 에서:
 
 | 파일 | 크기 | 용도 |
 |---|---|---|
-| `aicode-os-v2.0.5.iso.part1` | 1.99 GB | OS 본체 (조각 1) |
-| `aicode-os-v2.0.5.iso.part2` | 1.65 GB | OS 본체 (조각 2) |
+| `aicode-os-v2.0.6.iso.part1` | 약 1.9 GB | OS 본체 (조각 1) |
+| `aicode-os-v2.0.6.iso.part2` | 약 1.8 GB | OS 본체 (조각 2) |
 | `cco-persistence.dat.xz` | 543 KB | 설정 저장소 (압축본) |
 
 > ISO 본체가 너무 커서 두 조각으로 나눠 올렸습니다. 합쳐서 사용.
@@ -79,15 +107,15 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 **Windows** — `cmd` 창에서:
 ```cmd
-copy /b aicode-os-v2.0.5.iso.part1+aicode-os-v2.0.5.iso.part2 aicode-os-v2.0.5.iso
+copy /b aicode-os-v2.0.6.iso.part1+aicode-os-v2.0.6.iso.part2 aicode-os-v2.0.6.iso
 ```
 
 **Mac / Linux** — 터미널에서:
 ```bash
-cat aicode-os-v2.0.5.iso.part1 aicode-os-v2.0.5.iso.part2 > aicode-os-v2.0.5.iso
+cat aicode-os-v2.0.6.iso.part1 aicode-os-v2.0.6.iso.part2 > aicode-os-v2.0.6.iso
 ```
 
-→ 3.4 GB `aicode-os-v2.0.5.iso` 파일 하나가 만들어집니다.
+→ 약 3.6 GB `aicode-os-v2.0.6.iso` 파일 하나가 만들어집니다.
 
 #### 4단계 · 설정 저장소 (`cco-persistence.dat.xz`) 압축 풀기
 
@@ -106,7 +134,7 @@ USB 의 root 폴더 (예: `F:` 드라이브 안 최상위) 에 그대로 복사:
 
 | 위치 | 파일 |
 |---|---|
-| `F:\aicode-os-v2.0.5.iso` | (3.4 GB, 합친 ISO) |
+| `F:\aicode-os-v2.0.6.iso` | (약 3.6 GB, 합친 ISO) |
 | `F:\cco-persistence.dat` | (3.5 GB, 풀어놓은 설정 저장소) |
 | `F:\ventoy\ventoy.json` | (아래 내용으로 새로 만들기) |
 
@@ -116,11 +144,11 @@ USB 의 root 폴더 (예: `F:` 드라이브 안 최상위) 에 그대로 복사:
   "control": [
     { "VTOY_DEFAULT_MENU_MODE": "0" },
     { "VTOY_MENU_TIMEOUT": "3" },
-    { "VTOY_DEFAULT_IMAGE": "/aicode-os-v2.0.5.iso" }
+    { "VTOY_DEFAULT_IMAGE": "/aicode-os-v2.0.6.iso" }
   ],
   "persistence": [
     {
-      "image": "/aicode-os-v2.0.5.iso",
+      "image": "/aicode-os-v2.0.6.iso",
       "backend": "/cco-persistence.dat",
       "autosel": 1
     }
@@ -177,7 +205,7 @@ LiveUSB 는 **USB 안에서만 작업**합니다. 호스트 PC 의 디스크 (Wi
 
 **Q · 설정 저장소 (`cco-persistence.dat`) 어디서 받나요?**
 
-가장 쉬운 방법 = [Release](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.5) 에서 `cco-persistence.dat.xz` (543 KB) 다운로드 → 7-Zip 으로 풀기 → 3.5 GB 파일 하나.
+가장 쉬운 방법 = [Release](https://github.com/Hostingglobal-Tech/claude-code-os/releases/latest) 에서 `cco-persistence.dat.xz` (543 KB) 다운로드 → 7-Zip 으로 풀기 → 3.5 GB 파일 하나.
 
 | 방법 | 어떻게 | 어디서 |
 |---|---|---|
@@ -190,10 +218,10 @@ LiveUSB 는 **USB 안에서만 작업**합니다. 호스트 PC 의 디스크 (Wi
 다운로드 받은 폴더에서 한 줄:
 ```bash
 # Windows (cmd 창)
-copy /b aicode-os-v2.0.5.iso.part1+aicode-os-v2.0.5.iso.part2 aicode-os-v2.0.5.iso
+copy /b aicode-os-v2.0.6.iso.part1+aicode-os-v2.0.6.iso.part2 aicode-os-v2.0.6.iso
 
 # Mac / Linux (터미널)
-cat aicode-os-v2.0.5.iso.part1 aicode-os-v2.0.5.iso.part2 > aicode-os-v2.0.5.iso
+cat aicode-os-v2.0.6.iso.part1 aicode-os-v2.0.6.iso.part2 > aicode-os-v2.0.6.iso
 ```
 
 > 합치고 나면 part1, part2 는 삭제해도 됩니다.
@@ -244,7 +272,7 @@ export OPENAI_API_KEY="sk-..."
 
 **Q · 한글 입력이 안 돼요.**
 
-키보드의 `Shift+Space` 또는 `한/영` 키 누르기.
+키보드의 `Shift+Space`, `한/영`, v2.0.6부터는 `Caps Lock` 키 누르기.
 
 입력기 아이콘이 안 보이면 검은 창에서:
 ```bash
@@ -253,15 +281,15 @@ ibus restart
 
 **Q · 맥북 사용자인데 `Caps Lock` 으로 한/영 전환은 안 되나요?**
 
-> 🙏 **@akra.dev** 님 의견 반영 — **다음 버전 v2.0.6** 에서 **Caps Lock = 한/영** 기본 설정을 포함할 예정입니다.
+> 🙏 **@akra.dev** 님 의견 반영 — **v2.0.6** 에서 **Caps Lock = 한/영** 기본 설정을 포함합니다.
 
 지금 v2.0.5 도 검은 창에 한 줄 실행하면 즉시 활성화 (USB 에 저장되어 영구):
 ```bash
-dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock']"
+dconf write /desktop/ibus/general/hotkey/triggers "['<Shift>space', 'Hangul', 'Caps_Lock', '<Super>space']"
 ibus restart
 ```
 
-이후 `Shift+Space`, `한/영`, `Caps Lock` 셋 다 토글 가능.
+이후 `Shift+Space`, `한/영`, `Caps Lock`, `Super+Space` 모두 토글 가능.
 
 **Q · 와이파이 비번은 어떻게?**
 
@@ -350,7 +378,7 @@ Talking to AI takes too many steps — install OS, drivers, browser, Node, npm, 
 
 Boot → ~1 min → auth → AI.
 
-### What's inside (v2.0.5)
+### What's inside (v2.0.6)
 
 - base: Linux Mint 21.3 XFCE (Ubuntu 22.04 LTS jammy)
 - **Anthropic Claude Code** (npm `@anthropic-ai/claude-code`) — left tab
@@ -372,7 +400,7 @@ cp repo/build-mint.sh .
 cp repo/branding/cco-wallpaper.png branding/
 
 sudo bash build-mint.sh   # ~35 minutes
-# → aicode-os-v2.0.5.iso (~3.4 GB)
+# → aicode-os-v2.0.6.iso (~3.6 GB)
 ```
 
 ### Use

@@ -4,7 +4,7 @@
 
 ---
 
-## v2.0.6 (예정) — 최신 CLI 빌드 + 고해상도 wallpaper + macOS 사용자 친화
+## v2.0.6 (2026-06-21) — 최신 CLI 빌드 + 고해상도 wallpaper + macOS 사용자 친화
 
 ### 추가 및 개선
 - **빌드 시점 최신 CLI 설치** — `@anthropic-ai/claude-code@latest`, `@openai/codex@latest`를 설치하도록 명시
@@ -16,6 +16,12 @@
 - **CLI 종료 후 복구성 개선** — Claude/Codex가 종료되어도 탭이 바로 닫히지 않고 shell로 돌아오도록 처리
 - **Ventoy 설치 스크립트 정정** — 옛 Alpine ISO 파일명을 사용하던 문제를 수정하고, 현재 Release의 `aicode-os-*.iso.part1/part2`와 `cco-persistence.dat.xz` 구조를 처리하도록 변경
 - **셸 스크립트 검수** — Linux/macOS 실행을 방해하던 CRLF 줄끝 문제를 정리하고 `bash -n`, `shellcheck` 통과 확인
+
+### 검증 결과
+- 빌드 산출물: `aicode-os-v2.0.6.iso` (약 3.6 GB)
+- Claude Code: `2.1.185`
+- OpenAI Codex CLI: `0.141.0`
+- SHA256: `792287b3eaf313bc9dbee0e6a99f3e6955b4ce2ba2dc733b20fe7fab5e7d1466`
 
 → 임시 우회 (v2.0.5 사용 중): 터미널에서
 ```bash

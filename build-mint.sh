@@ -27,7 +27,7 @@ if [ ! -f "$EXTRACT/casper/filesystem.squashfs" ]; then
 fi
 date +"extract %T"
 
-# 2. filesystem.squashfs 풀기 (이미 풀려있고 firefox 박혀있으면 skip)
+# 2. filesystem.squashfs 풀기 (이미 풀려 있고 firefox가 있으면 skip)
 if [ ! -f "$ROOTFS/usr/bin/firefox" ]; then
   rm -rf "$ROOTFS"
   mkdir -p "$ROOTFS"
@@ -126,7 +126,7 @@ cat <<'BANNER'
 
 BANNER
 printf '\033[0m'
-printf '\033[38;5;245m  Mint 21.3 XFCE · cco user (sudo NOPASSWD) · 한글: Shift+Space\033[0m\n\n'
+printf '\033[38;5;245m  Mint 21.3 XFCE · cco user (sudo NOPASSWD) · 한글: Shift+Space / Caps Lock\033[0m\n\n'
 if command -v claude >/dev/null 2>&1; then
   claude --dangerously-skip-permissions
   rc=$?
