@@ -23,7 +23,7 @@ Ventoy 설치는 USB를 부팅 가능하게 만들기 위해 선택한 디스크
 
 명령어를 모르면 이 방법을 쓰면 됩니다.
 
-1. GitHub에서 이 저장소를 ZIP으로 다운로드합니다.
+1. [Releases v2.0.6](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6)에서 `AICODE-OS-USB-Maker-v2.0.6.zip`을 다운로드합니다.
 2. 압축을 풉니다.
 3. `AICODE-OS-USB-만들기.cmd`를 더블클릭합니다.
 4. 관리자 권한 요청이 나오면 허용합니다.

@@ -59,7 +59,7 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 Windows 사용자는 명령어를 몰라도 됩니다.
 
-1. 이 저장소를 ZIP으로 다운로드합니다.
+1. [Releases v2.0.6](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6)에서 `AICODE-OS-USB-Maker-v2.0.6.zip`을 다운로드합니다.
 2. 압축을 풉니다.
 3. `AICODE-OS-USB-만들기.cmd`를 더블클릭합니다.
 4. 화면에 나오는 USB 목록에서 USB 메모리만 선택합니다.
