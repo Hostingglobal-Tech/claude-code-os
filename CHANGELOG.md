@@ -4,6 +4,30 @@
 
 ---
 
+## v2.0.7 (2026-06-21) — 부팅 진행 표시 개선 hotfix
+
+### 수정
+- 기본 부팅 항목에서 `quiet splash`를 제거해 부팅 후 검은 화면처럼 오래 멈춘 것처럼 보이는 문제를 줄임
+- GRUB/ISOLINUX 기본 부팅 옵션에 `systemd.show_status=1 loglevel=4`를 추가해 부팅 진행 상태가 화면에 보이도록 변경
+- GRUB 자동 부팅 대기 시간을 3초로 설정
+- ISOLINUX 자동 부팅 대기 시간을 3초(`timeout 30`)로 설정
+- 기본 부팅 메뉴명을 `AICODE-OS v2.0.7`로 갱신
+- Windows USB Maker 문서와 설치 가이드의 최신 릴리즈 안내를 v2.0.7로 갱신
+
+### 검증 결과
+- 빌드 산출물: `aicode-os-v2.0.7.iso` (약 3.6 GB)
+- 분할 산출물: `aicode-os-v2.0.7.iso.part1` + `aicode-os-v2.0.7.iso.part2`
+- ISO 내부 `/boot/grub/grub.cfg`, `/isolinux/live.cfg`에 부팅 진행 표시 옵션 반영 확인
+- `part1 + part2`를 다시 이어 읽은 SHA256이 원본 ISO와 일치함
+- SHA256: `91c3e8e24aade3c23c0e57de12dbe25ada3cf7535654091e732f9a51c19548bf`
+
+### 범위
+- v2.0.7은 부팅 설정 hotfix입니다.
+- ISO 안의 런타임 구성과 CLI 패키지 계열은 v2.0.6과 호환됩니다.
+- 새로 전체 빌드할 경우 `build-mint.sh`는 v2.0.7 기준 부팅 설정을 포함합니다.
+
+---
+
 ## v2.0.6 (2026-06-21) — 최신 CLI 빌드 + 고해상도 wallpaper + macOS 사용자 친화
 
 ### 추가 및 개선

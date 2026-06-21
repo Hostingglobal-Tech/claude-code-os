@@ -6,7 +6,7 @@ set -e
 WORK_DIR="${WORK_DIR:-$(pwd)}"
 cd "$WORK_DIR"
 
-VERSION="${VERSION:-2.0.6}"
+VERSION="${VERSION:-2.0.7}"
 ISO_OUT="${ISO_OUT:-aicode-os-v${VERSION}.iso}"
 ISO_IN="${ISO_IN:-linuxmint-21.3-xfce-64bit.iso}"
 WALLPAPER_PNG="${WALLPAPER_PNG:-${WORK_DIR}/branding/cco-wallpaper.png}"
@@ -122,7 +122,7 @@ cat <<'BANNER'
      ██║  ██║██║╚██████╗╚██████╔╝██████╔╝███████╗     ╚██████╔╝███████║
      ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝      ╚═════╝ ╚══════╝
 
-           AICODE-OS  v2.0.6  ·  Anthropic Claude Code
+          AICODE-OS  v2.0.7  ·  Anthropic Claude Code
 
 BANNER
 printf '\033[0m'
@@ -154,7 +154,7 @@ cat <<'BANNER'
      ██║  ██║██║╚██████╗╚██████╔╝██████╔╝███████╗     ╚██████╔╝███████║
      ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝      ╚═════╝ ╚══════╝
 
-           AICODE-OS  v2.0.6  ·  OpenAI Codex CLI
+          AICODE-OS  v2.0.7  ·  OpenAI Codex CLI
 
 BANNER
 printf '\033[0m'
@@ -553,11 +553,112 @@ date +"mksquashfs %T"
 # 7. filesystem.size 갱신
 du -sx --block-size=1 "$ROOTFS" | cut -f1 > "$EXTRACT/casper/filesystem.size"
 
+# 7.5. boot menu tuning
+# quiet/splash can make live ISO boot look like a long black-screen hang.
+# Show boot progress and keep a short auto-boot timeout for both UEFI GRUB and legacy ISOLINUX.
+mkdir -p "$EXTRACT/boot/grub" "$EXTRACT/isolinux"
+cat > "$EXTRACT/boot/grub/grub.cfg" <<EOGRUB
+set default=0
+set timeout=3
+
+loadfont unicode
+
+set color_normal=white/black
+set color_highlight=black/light-gray
+
+menuentry "Start AICODE-OS v${VERSION} (show boot progress)" --class linuxmint {
+	set gfxpayload=keep
+	linux	/casper/vmlinuz  boot=casper username=mint hostname=mint systemd.show_status=1 loglevel=4 --
+	initrd	/casper/initrd.lz
+}
+menuentry "Start AICODE-OS v${VERSION} compatibility mode" {
+	linux	/casper/vmlinuz  boot=casper username=mint hostname=mint noapic noacpi nosplash irqpoll nomodeset systemd.show_status=1 loglevel=4 --
+	initrd	/casper/initrd.lz
+}
+menuentry "OEM install (for manufacturers)" {
+	set gfxpayload=keep
+	linux	/casper/vmlinuz  oem-config/enable=true only-ubiquity boot=casper username=mint hostname=mint systemd.show_status=1 loglevel=4 --
+	initrd	/casper/initrd.lz
+}
+grub_platform
+if [ "\$grub_platform" = "efi" ]; then
+menuentry 'Boot from next volume' {
+	exit 1
+}
+menuentry 'UEFI Firmware Settings' {
+	fwsetup
+}
+menuentry 'Memory test' {
+	linux	/boot/memtest64.efi
+}
+fi
+EOGRUB
+
+cat > "$EXTRACT/isolinux/live.cfg" <<EOLIVE
+timeout 30
+default live
+prompt 0
+
+menu background splash.png
+menu title Welcome to AICODE-OS v${VERSION}
+
+menu color screen	37;40      #80ffffff #00000000 std
+MENU COLOR border       30;44   #40ffffff #a0000000 std
+MENU COLOR title        1;36;44 #ffffffff #a0000000 std
+MENU COLOR sel          7;37;40 #e0ffffff #20ffffff all
+MENU COLOR unsel        37;44   #50ffffff #a0000000 std
+MENU COLOR help         37;40   #c0ffffff #a0000000 std
+MENU COLOR timeout_msg  37;40   #80ffffff #00000000 std
+MENU COLOR timeout      1;37;40 #c0ffffff #00000000 std
+MENU COLOR msg07        37;40   #90ffffff #a0000000 std
+MENU COLOR tabmsg       31;40   #ffDEDEDE #00000000 std
+MENU WIDTH 78
+MENU MARGIN 15
+MENU ROWS 6
+MENU VSHIFT 10
+MENU TABMSGROW 12
+MENU CMDLINEROW 12
+MENU HELPMSGROW 16
+MENU HELPMSGENDROW 29
+
+label live
+	menu label Start AICODE-OS v${VERSION} (show boot progress)
+	menu default
+	kernel /casper/vmlinuz
+	append boot=casper initrd=/casper/initrd.lz username=mint hostname=mint systemd.show_status=1 loglevel=4 --
+
+label compat
+	menu label Start AICODE-OS v${VERSION} compatibility mode
+	linux /casper/vmlinuz
+	append boot=casper initrd=/casper/initrd.lz username=mint hostname=mint noapic noacpi nosplash irqpoll nomodeset systemd.show_status=1 loglevel=4 --
+
+label oem
+	menu label OEM install (for manufacturers)
+	linux /casper/vmlinuz
+	append oem-config/enable=true only-ubiquity boot=casper initrd=/casper/initrd.lz username=mint hostname=mint systemd.show_status=1 loglevel=4 --
+
+label hdt
+	menu label Hardware Detection
+	kernel hdt.c32
+
+label local
+	menu label Boot from local drive
+	COM32 chain.c32
+	APPEND hd0
+
+label memtest
+	menu label Memory test
+	kernel /boot/memtest64.efi
+EOLIVE
+
 # 8. ISO 재빌드 (원본 boot info 그대로)
+ISO_VOLID="AICODE_OS_V${VERSION//./_}"
 xorriso -indev "$ISO_IN" -outdev "$ISO_OUT" \
-  -boot_image any replay -volid 'CCO-Mint-v2.0.0' \
+  -boot_image any replay -volid "$ISO_VOLID" \
   -map "$EXTRACT/casper/filesystem.squashfs" /casper/filesystem.squashfs \
   -map "$EXTRACT/casper/filesystem.size" /casper/filesystem.size \
+  -map "$EXTRACT/boot/grub/grub.cfg" /boot/grub/grub.cfg \
+  -map "$EXTRACT/isolinux/live.cfg" /isolinux/live.cfg \
   -commit 2>&1 | tail -3
 
 chown nmsglobal:nmsglobal "$ISO_OUT"

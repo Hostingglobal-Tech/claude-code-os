@@ -18,8 +18,8 @@
   PS> .\install-cco-on-ventoy.ps1
 
 .EXAMPLE
-  2번 물리 디스크에 Ventoy를 설치하고 v2.0.5 Release 파일을 USB에 배치:
-  PS> .\install-cco-on-ventoy.ps1 -DiskNumber 2 -Version v2.0.5
+  2번 물리 디스크에 Ventoy를 설치하고 v2.0.7 Release 파일을 USB에 배치:
+  PS> .\install-cco-on-ventoy.ps1 -DiskNumber 2 -Version v2.0.7
 
 .EXAMPLE
   이미 Ventoy가 설치된 F: 드라이브에만 파일 복사:

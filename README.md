@@ -14,7 +14,8 @@
 
 > 🙏 **커뮤니티 의견 반영**
 > - **v2.0.5** — 스레드 사용자 **@imusiro** 님의 *"저장 파일은 어디서 받나요?"* 의견 반영. 이제 직접 만들지 않고 Release 파일을 다운로드해 사용할 수 있습니다.
-> - **v2.0.6 (최신)** — **@akra.dev** 님의 *"맥북은 Caps Lock 이 기본 한/영 변환인데 맥 환경은 안 좋아하시나봄"* 의견을 반영해 **Caps Lock 키 = 한/영 토글**을 기본 설정에 포함합니다. (v2.0.5에서도 한 줄 명령으로 활성화 가능 → [QnA Q · 맥북 Caps Lock](#4-한글--와이파이) 참조)
+> - **v2.0.7 (최신)** — 부팅 메뉴에서 선택 후 검은 화면처럼 오래 멈춘 것처럼 보이는 문제를 줄이기 위해 기본 부팅에서 진행 로그를 표시합니다.
+> - **v2.0.6** — **@akra.dev** 님의 *"맥북은 Caps Lock 이 기본 한/영 변환인데 맥 환경은 안 좋아하시나봄"* 의견을 반영해 **Caps Lock 키 = 한/영 토글**을 기본 설정에 포함합니다. (v2.0.5에서도 한 줄 명령으로 활성화 가능 → [QnA Q · 맥북 Caps Lock](#4-한글--와이파이) 참조)
 > - **v2.0.6 추가 수정** — 고해상도/외부 모니터 장비에서 XFCE 모니터명이 달라져도 AICODE-OS wallpaper가 자동 적용되도록 로그인 후 wallpaper 복구 스크립트를 추가했습니다.
 > - **CLI 버전 안내** — 이미 배포된 ISO 안의 Claude Code/Codex는 ISO를 만들 당시의 버전입니다. `build-mint.sh`로 새 ISO를 빌드하면 빌드 시점의 최신 npm 패키지를 설치합니다.
 
@@ -59,7 +60,7 @@ USB로 부팅 → 약 1분 → 로그인 한 번 → AI 작업 환경.
 
 Windows 사용자는 명령어를 몰라도 됩니다.
 
-1. [Releases v2.0.6](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6)에서 `AICODE-OS-USB-Maker-v2.0.6.zip`을 다운로드합니다.
+1. [Releases v2.0.7](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.7)에서 `AICODE-OS-USB-Maker-v2.0.7.zip`을 다운로드합니다.
 2. 압축을 풉니다.
 3. `AICODE-OS-USB-만들기.cmd`를 더블클릭합니다.
 4. 화면에 나오는 USB 목록에서 USB 메모리만 선택합니다.
@@ -91,12 +92,12 @@ powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -
 
 #### 2단계 · 두 파일 다운로드
 
-[**Releases v2.0.6**](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6) 에서:
+[**Releases v2.0.7**](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.7) 에서:
 
 | 파일 | 크기 | 용도 |
 |---|---|---|
-| `aicode-os-v2.0.6.iso.part1` | 약 1.9 GB | OS 본체 (조각 1) |
-| `aicode-os-v2.0.6.iso.part2` | 약 1.8 GB | OS 본체 (조각 2) |
+| `aicode-os-v2.0.7.iso.part1` | 약 1.9 GB | OS 본체 (조각 1) |
+| `aicode-os-v2.0.7.iso.part2` | 약 1.8 GB | OS 본체 (조각 2) |
 | `cco-persistence.dat.xz` | 543 KB | 설정 저장소 (압축본) |
 
 > ISO 본체가 너무 커서 두 조각으로 나눠 올렸습니다. 합쳐서 사용.
@@ -107,15 +108,15 @@ powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -
 
 **Windows** — `cmd` 창에서:
 ```cmd
-copy /b aicode-os-v2.0.6.iso.part1+aicode-os-v2.0.6.iso.part2 aicode-os-v2.0.6.iso
+copy /b aicode-os-v2.0.7.iso.part1+aicode-os-v2.0.7.iso.part2 aicode-os-v2.0.7.iso
 ```
 
 **Mac / Linux** — 터미널에서:
 ```bash
-cat aicode-os-v2.0.6.iso.part1 aicode-os-v2.0.6.iso.part2 > aicode-os-v2.0.6.iso
+cat aicode-os-v2.0.7.iso.part1 aicode-os-v2.0.7.iso.part2 > aicode-os-v2.0.7.iso
 ```
 
-→ 약 3.6 GB `aicode-os-v2.0.6.iso` 파일 하나가 만들어집니다.
+→ 약 3.6 GB `aicode-os-v2.0.7.iso` 파일 하나가 만들어집니다.
 
 #### 4단계 · 설정 저장소 (`cco-persistence.dat.xz`) 압축 풀기
 
@@ -134,7 +135,7 @@ USB 의 root 폴더 (예: `F:` 드라이브 안 최상위) 에 그대로 복사:
 
 | 위치 | 파일 |
 |---|---|
-| `F:\aicode-os-v2.0.6.iso` | (약 3.6 GB, 합친 ISO) |
+| `F:\aicode-os-v2.0.7.iso` | (약 3.6 GB, 합친 ISO) |
 | `F:\cco-persistence.dat` | (3.5 GB, 풀어놓은 설정 저장소) |
 | `F:\ventoy\ventoy.json` | (아래 내용으로 새로 만들기) |
 
@@ -144,11 +145,11 @@ USB 의 root 폴더 (예: `F:` 드라이브 안 최상위) 에 그대로 복사:
   "control": [
     { "VTOY_DEFAULT_MENU_MODE": "0" },
     { "VTOY_MENU_TIMEOUT": "3" },
-    { "VTOY_DEFAULT_IMAGE": "/aicode-os-v2.0.6.iso" }
+    { "VTOY_DEFAULT_IMAGE": "/aicode-os-v2.0.7.iso" }
   ],
   "persistence": [
     {
-      "image": "/aicode-os-v2.0.6.iso",
+      "image": "/aicode-os-v2.0.7.iso",
       "backend": "/cco-persistence.dat",
       "autosel": 1
     }
@@ -218,10 +219,10 @@ LiveUSB 는 **USB 안에서만 작업**합니다. 호스트 PC 의 디스크 (Wi
 다운로드 받은 폴더에서 한 줄:
 ```bash
 # Windows (cmd 창)
-copy /b aicode-os-v2.0.6.iso.part1+aicode-os-v2.0.6.iso.part2 aicode-os-v2.0.6.iso
+copy /b aicode-os-v2.0.7.iso.part1+aicode-os-v2.0.7.iso.part2 aicode-os-v2.0.7.iso
 
 # Mac / Linux (터미널)
-cat aicode-os-v2.0.6.iso.part1 aicode-os-v2.0.6.iso.part2 > aicode-os-v2.0.6.iso
+cat aicode-os-v2.0.7.iso.part1 aicode-os-v2.0.7.iso.part2 > aicode-os-v2.0.7.iso
 ```
 
 > 합치고 나면 part1, part2 는 삭제해도 됩니다.
@@ -356,7 +357,7 @@ sudo bash build-mint.sh   # ~35분
 
 자세한 안내는 [직접 빌드](#1-1-선택-직접-빌드) 섹션.
 
-**Q · 새 버전 (v2.0.6 등) 나오면 업데이트는?**
+**Q · 새 버전 (v2.0.7 등) 나오면 업데이트는?**
 
 1. Release 에서 새 ISO 두 조각 받아 합치기
 2. USB 의 옛 ISO 지우고 새 ISO 복사
@@ -378,9 +379,10 @@ Talking to AI takes too many steps — install OS, drivers, browser, Node, npm, 
 
 Boot → ~1 min → auth → AI.
 
-### What's inside (v2.0.6)
+### What's inside (v2.0.7)
 
 - base: Linux Mint 21.3 XFCE (Ubuntu 22.04 LTS jammy)
+- v2.0.7: boot menu timeout and progress log hotfix. Runtime payload remains compatible with v2.0.6.
 - **Anthropic Claude Code** (npm `@anthropic-ai/claude-code`) — left tab
 - **OpenAI Codex CLI** (npm `@openai/codex`) — right tab (single xfce4-terminal, two tabs)
 - node v20 LTS + Firefox + nm-applet (Wi-Fi GUI)
@@ -400,7 +402,7 @@ cp repo/build-mint.sh .
 cp repo/branding/cco-wallpaper.png branding/
 
 sudo bash build-mint.sh   # ~35 minutes
-# → aicode-os-v2.0.6.iso (~3.6 GB)
+# → aicode-os-v2.0.7.iso (~3.6 GB)
 ```
 
 ### Use

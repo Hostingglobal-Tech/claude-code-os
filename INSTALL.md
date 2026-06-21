@@ -23,7 +23,7 @@ Ventoy 설치는 USB를 부팅 가능하게 만들기 위해 선택한 디스크
 
 명령어를 모르면 이 방법을 쓰면 됩니다.
 
-1. [Releases v2.0.6](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.6)에서 `AICODE-OS-USB-Maker-v2.0.6.zip`을 다운로드합니다.
+1. [Releases v2.0.7](https://github.com/Hostingglobal-Tech/claude-code-os/releases/tag/v2.0.7)에서 `AICODE-OS-USB-Maker-v2.0.7.zip`을 다운로드합니다.
 2. 압축을 풉니다.
 3. `AICODE-OS-USB-만들기.cmd`를 더블클릭합니다.
 4. 관리자 권한 요청이 나오면 허용합니다.
@@ -59,13 +59,13 @@ powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -
 특정 Release를 지정하려면:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Version v2.0.5
+powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Version v2.0.7
 ```
 
 로컬 ISO를 이미 가지고 있다면:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -SkipVentoyInstall -IsoPath D:\AICODE_OS_RELEASE\v2.0.5\aicode-os-v2.0.5.iso
+powershell -ExecutionPolicy Bypass -File .\install-cco-on-ventoy.ps1 -Drive F: -SkipVentoyInstall -IsoPath D:\AICODE_OS_RELEASE\v2.0.7\aicode-os-v2.0.7.iso
 ```
 
 ---
@@ -234,15 +234,15 @@ sudo bash build-mint.sh
 출력:
 
 ```text
-aicode-os-v2.0.6.iso
-aicode-os-v2.0.6.iso.sha256
+aicode-os-v2.0.7.iso
+aicode-os-v2.0.7.iso.sha256
 ```
 
 빌드가 끝나면 ISO를 Release용으로 나누어 업로드할 수 있습니다.
 
 ```bash
-split -b 1900M aicode-os-v2.0.6.iso aicode-os-v2.0.6.iso.part
-sha256sum aicode-os-v2.0.6.iso > aicode-os-v2.0.6.iso.sha256
+split -b 1900M aicode-os-v2.0.7.iso aicode-os-v2.0.7.iso.part
+sha256sum aicode-os-v2.0.7.iso > aicode-os-v2.0.7.iso.sha256
 ```
 
 ---
